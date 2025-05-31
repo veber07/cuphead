@@ -1,6 +1,7 @@
 public class GameManag {
     private boolean running = true;
     private String resultText = "";
+    private boolean gameOverHandled = false;
 
     public void update(Player player, Boss boss) {
         if (!running) return;
@@ -27,5 +28,16 @@ public class GameManag {
     public void reset() {
         running = true;
         resultText = "";
+        gameOverHandled = false;
+    }
+
+
+    public boolean isGameOverHandled() {
+        return gameOverHandled;
+    }
+
+    public void setGameOverHandled(boolean handled) {
+        this.gameOverHandled = handled;
     }
 }
+

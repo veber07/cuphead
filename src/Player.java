@@ -7,60 +7,79 @@ public class Player {
     public boolean onGround = false;
     public int aimX = 1;
     public int aimY = 0;
+   private boolean crouching = false;
+    private long lastHitTime = 0;
+    private boolean invincible = false;
+    private final int baseHeight;
 
     private final float GRAVITY = 0.5f;
     private final float JUMP_FORCE = -10f;
-    private final float MOVE_SPEED = 3f;
+    private final float MOVE_SPEED = 5f;
+
 
     public int facingY = 0;
     public int facingX = 0;
 
-    public int width = 80, height = 100;
+    public int width;
+    private  int height;
     private int health = 100;
 
-    public void update(boolean left, boolean right, boolean jump,boolean up, int groundY) {
+    public Player(int screenWidth, int screenHeight) {
+
+        this.width = screenWidth / 20;
+        this.height = screenHeight / 8;
+
+
+        this.x = Math.max(screenWidth / 10, 0);
+        this.y = Math.max(screenHeight - (screenHeight / 18) - this.height, 0);
+        this.baseHeight = screenHeight / 10;
+        this.height = baseHeight;
+    }
+
+    public void update(boolean left, boolean right, boolean jump,boolean down, boolean up, int groundY) {
         final int JUMP_FORCE = -10;
         velocityX = 0;
+        velocityX = 0;
+
         if (left) {
             velocityX = -MOVE_SPEED;
             facingX = -1;
-            aimX= -1;
-            aimY = 0;
         } else if (right) {
             velocityX = MOVE_SPEED;
             facingX = 1;
-            aimX= 1;
-            aimY = 0;
-
         }
 
-
-
-        if(up) {
-            facingY = -1;
+        if (up) {
+            aimX = 0;
             aimY = -1;
-        }else {
+        } else if (left) {
+            aimX = -1;
             aimY = 0;
+        } else if (right) {
+            aimX = 1;
+            aimY = 0;
+        } else {
+            aimX = facingX;
+            aimY = facingY;
         }
 
-        if (!left && !right) {
-            facingX = 0;
-        }
+        crouching = down;
+        if (crouching) {
+            height = baseHeight / 2;
+        } else {
+          height = baseHeight;
 
+        }
+       // if (!left && !right) {
+       //     facingX = 0;
+     //   }
         if (jump && onGround) {
             velocityY = JUMP_FORCE;
             onGround = false;
         }
-
-
-
-
-
         velocityY += GRAVITY;
-
         x += velocityX;
         y += velocityY;
-
         if (y + height >= groundY) {
             y = groundY - height;
             velocityY = 0;
@@ -69,17 +88,34 @@ public class Player {
             onGround = false;
             
         }
+        if (invincible && System.currentTimeMillis() - lastHitTime >= 3000) {
+            invincible = false;
+        }
+
     }
 
     public void takeDamage(int dmg) {
-        health -= dmg;
-        if (health < 0) health = 0;
+        if (!invincible) {
+            health = health- dmg;
+            if (health < 0) health = 0;
+            invincible = true;
+            lastHitTime = System.currentTimeMillis();
+        }
     }
 
     public void draw(Graphics2D g2) {
         g2.setColor(Color.BLUE);
         g2.fillRect((int)x, (int)y, width, height);
+        //System.out.println("Player: x=" + x + ", y=" + y + ", width=" + width + ", height=" + height);
 
+    }
+
+    public boolean isInvincible() {
+        return invincible;
+    }
+
+    public boolean isCrouching() {
+        return crouching;
     }
 
     public float getX() {
@@ -168,6 +204,10 @@ public class Player {
 
     public int getWidth() {
         return width;
+    }
+
+    public int getBaseHeight() {
+        return baseHeight;
     }
 
     public void setWidth(int width) {
