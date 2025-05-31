@@ -1,10 +1,18 @@
 import javax.swing.*;
 import javax.swing.*;
 import java.awt.*;
-
+/**
+ * The MenuPanel class represents the main menu screen of the game.
+ */
 public class MenuPanel extends JPanel {
     private GameLauncher launcher;
-
+    /**
+     * Construction
+     *
+     * @param screenWidth The width of the screen.
+     * @param screenHeight The height of the screen.
+     * @param launcher The GameLauncher instance that manages game panels.
+     */
     public MenuPanel(int screenWidth, int screenHeight, GameLauncher launcher) {
         this.launcher = launcher;
         setBackground(Color.BLACK);

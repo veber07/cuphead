@@ -1,8 +1,18 @@
+
+/**
+ * The GameManag class  manages the overall state of the game -game is running, and determines win/loss conditions.
+ */
 public class GameManag {
     private boolean running = true;
     private String resultText = "";
     private boolean gameOverHandled = false;
+    /**
+     * Updates the game state based on the player's and boss's health and determines if the gsme has ended (win or lose).
 
+     *
+     * @param player The Player object.
+     * @param boss The Boss object.
+     */
     public void update(Player player, Boss boss) {
         if (!running) return;
 
@@ -24,7 +34,9 @@ public class GameManag {
     public String getResultText() {
         return resultText;
     }
-
+    /**
+     * Resets the game manager to its initial state, allowing a new game to start.
+     */
     public void reset() {
         running = true;
         resultText = "";

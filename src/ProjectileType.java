@@ -1,3 +1,7 @@
+
+/**
+ * Defines various types of projectiles in the game.
+ */
 public enum ProjectileType {
     PLAYER_BULLET(10),
     BOSS_BALL(15),

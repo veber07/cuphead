@@ -1,6 +1,9 @@
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-
+/**
+ * The Key class implements KeyListener to handle keyboard input for player controls and game actions. It tracks the pressed state of various keys.
+ *
+ */
 public class Key implements KeyListener {
     public boolean upPressed, downPressed, leftPressed, rightPressed,shootPressed, upViewPressed, escape;
     private boolean gameOver = false;
@@ -9,7 +12,11 @@ public class Key implements KeyListener {
     public void keyTyped(KeyEvent e) {
 
     }
+    /**
+     * Invoked when a key has been pressednd wets the corresponding boolean flag to true for the pressed key.
 
+     * @param e The KeyEvent representing the key pressed event.
+     */
     @Override
     public void keyPressed(KeyEvent e) {
 
@@ -26,7 +33,10 @@ public class Key implements KeyListener {
 
 
     }
-
+    /**
+     * Invoked when a key has been released and sets the corresponding boolean flag to false for the released key.
+     * @param e The KeyEvent representing the key released event.
+     */
     @Override
     public void keyReleased(KeyEvent e) {
         int code = e.getKeyCode();

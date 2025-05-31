@@ -1,17 +1,25 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-
+/**
+ * The GameLauncher class is responsible for initializing and managing the main game window,
+ * switching between different game panels (main menu, game, tutorial), and handling full-screen mode.
+ */
 public class GameLauncher {
     private JFrame window;
     private int screenWidth;
     private int screenHeight;
-
+    /**
+     * Construction
+     */
     public GameLauncher() {
         setupWindow();
         showMainMenu();
     }
+    /**
+     * Configures the main JFrame for the game, including full-screen modeand default close operation, and window listeners for cleanup.
 
+     */
     private void setupWindow() {
         window = new JFrame("My Game");
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -38,14 +46,18 @@ public class GameLauncher {
         });
     }
 
-
+    /**
+     * Displays the main menu panel in the game window.
+     */
     public void showMainMenu() {
         MenuPanel menuPanel = new MenuPanel(screenWidth, screenHeight, this);
         window.setContentPane(menuPanel);
         window.revalidate();
         window.repaint();
     }
-
+    /**
+     * Starts the game by switching the window's content to the GamePanel.
+     */
     public void startGame() {
         GamePanel gamePanel = new GamePanel(this, screenWidth, screenHeight);
         window.setContentPane(gamePanel);
@@ -53,7 +65,9 @@ public class GameLauncher {
         gamePanel.requestFocusInWindow();
     }
 
-
+    /**
+     * Displays the tutorial panel with game controls and instructions.
+     */
     public void showTutorial() {
         JPanel tutorialPanel = new JPanel();
         tutorialPanel.setBackground(Color.DARK_GRAY);

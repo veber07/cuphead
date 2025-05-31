@@ -1,5 +1,8 @@
 import java.awt.*;
+/**
+ * The Player class represents the playable character in the game.
 
+ */
 public class Player {
     public float x, y;
     public float velocityX = 0;
@@ -23,7 +26,12 @@ public class Player {
     public int width;
     private  int height;
     private int health = 100;
-
+    /**
+     * Construction
+     *
+     * @param screenWidth The width of the game screen, used for initial positioning and scaling.
+     * @param screenHeight The height of the game screen, used for initial positioning and scaling.
+     */
     public Player(int screenWidth, int screenHeight) {
 
         this.width = screenWidth / 20;
@@ -35,7 +43,16 @@ public class Player {
         this.baseHeight = screenHeight / 10;
         this.height = baseHeight;
     }
-
+    /**
+     * Updates the player's state, including movement, aiming, crouching,jumping, and gravity application.
+     *
+     * @param left True if the left movement key is pressed.
+     * @param right True if the right movement key is pressed.
+     * @param jump True if the jump key is pressed.
+     * @param down True if the down/crouch key is pressed.
+     * @param up True if the up/aim up key is pressed.
+     * @param groundY The Y-coordinate of the ground level, used for collision with the floor.
+     */
     public void update(boolean left, boolean right, boolean jump,boolean down, boolean up, int groundY) {
         final int JUMP_FORCE = -10;
         velocityX = 0;
@@ -93,7 +110,12 @@ public class Player {
         }
 
     }
+    /**
+     * Reduces the player's health by the specified damage amount and The player becomes temporarily invincible after taking damage.
 
+     *
+     * @param dmg The amount of damage to take.
+     */
     public void takeDamage(int dmg) {
         if (!invincible) {
             health = health- dmg;
@@ -102,7 +124,11 @@ public class Player {
             lastHitTime = System.currentTimeMillis();
         }
     }
-
+    /**
+     * Draws the player character on the Graphics2D context.
+     *
+     * @param g2 The Graphics2D object to draw on.
+     */
     public void draw(Graphics2D g2) {
         g2.setColor(Color.BLUE);
         g2.fillRect((int)x, (int)y, width, height);

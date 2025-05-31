@@ -2,7 +2,9 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Iterator;
-
+/**
+ * The Boss class represents the boss entity in the game,stages,healt, attacks, and interactions with the player and game environment.
+ */
 public class Boss {
     private ArrayList<Platform> platforms = new ArrayList<>();
     private boolean platformsSpawnedForStage2 = false;
@@ -32,7 +34,15 @@ public class Boss {
     private long lastObstacleSpawnTime = 0;
     private static final long OBSTACLE_SPAWN_INTERVAL = 500;
 
-
+    /**
+     *constructor.
+     *
+     * @param x The initial X-coordinate of the boss.
+     * @param y The initial Y-coordinate of the boss.
+     * @param screenWidth The width of the game screen.
+     * @param screenHeight The height of the game screen.
+     * @param player A reference to the Player object.
+     */
     public Boss(float x, float y, int screenWidth, int screenHeight, Player player) {
         this.x = x;
         this.y = y;
@@ -41,6 +51,11 @@ public class Boss {
         this.player = player;
         initializeStage(this.stage);
     }
+    /**
+     * Initializes the boss to a new stage, resetting health, platforms, and obstacles.
+     *
+     * @param newStage The BossStage to initialize to.
+     */
     public void initializeStage(BossStage newStage) {
         this.stage = newStage;
 
@@ -70,18 +85,31 @@ public class Boss {
         }
     }
 
-
+    /**
+     * Reduces the boss's health by the specified damage amount and updates the boss's stage if health drops below limit.
+     * @param dmg The amount of damage to take.
+     */
     public void takeDamage(int dmg) {
         health -= dmg;
         if (health < 0) health = 0;
         updateStage();
     }
-
+    /**
+     * Moves the boss to the bottom-right corner of the screen.
+     *
+     * @param screenWidth The width of the game screen.
+     * @param screenHeight The height of the game screen.
+     */
     private void moveToBottomRight(int screenWidth, int screenHeight) {
         this.x = screenWidth - this.width;
         this.y = screenHeight - GROUND_HEIGHT - this.height;
     }
-
+    /**
+     * The boss shoots short and long lasers towards the player's Y-position.
+     *
+     * @param player The Player object.
+     * @param bullets The ArrayList of bullets to add new boss projectiles to.
+     */
     private void stage1Attack(Player player, ArrayList<Bullet> bullets) {
         long now = System.currentTimeMillis();
 
@@ -123,7 +151,15 @@ public class Boss {
             lastShotTime = now;
         }
     }
-
+    /**
+     *
+     * Spawns ground obstacles at regular intervals.
+     *
+     * @param bullets The ArrayList of bullets (not directly used in Stage 2 attack logic, but passed).
+     * @param groundObstacles The ArrayList of ground obstacles to add new obstacles to.
+     * @param screenWidth The width of the game screen.
+     * @param screenHeight The height of the game screen.
+     */
     public void stage2Attack(ArrayList<Bullet> bullets, ArrayList<Rectangle> groundObstacles, int screenWidth, int screenHeight) {
         long now = System.currentTimeMillis();
 
@@ -138,7 +174,11 @@ public class Boss {
         }
         updateGroundObstacles();
     }
-
+    /**
+     * Checks for collisions between the player and any active ground obstacles.
+     *
+     * @param player The Player object to check collision with.
+     */
     public void checkPlayerObstacleCollision(Player player) {
         Rectangle playerRect = new Rectangle((int)player.getX(), (int)player.getY(), player.getWidth(), player.getHeight());
 
@@ -160,7 +200,10 @@ public class Boss {
             }
         }
     }
-
+    /**
+     * Updates the boss's stage based on its current health.
+     * Resets  platforms, obstacles  specific to each stage change.
+     */
     private void updateStage() {
         if (health <= 100) {
             stage = BossStage.STAGE_3;
@@ -187,7 +230,13 @@ public class Boss {
             platformsSpawnedForStage2 = false;
         }
     }
-
+    /**
+     * Spawns a set of platforms
+     * These platforms are positioned relative to the player's standing height.
+     *
+     * @param screenWidth The width of the game screen.
+     * @param screenHeight The height of the game screen.
+     */
     public void spawnStage2Platforms(int screenWidth, int screenHeight) {
         platforms.clear();
 
@@ -222,7 +271,10 @@ public class Boss {
                     b.x, b.y, b.width, b.height);
         }
     }
-
+    /**
+     * Updates the position and state of all active ground obstacles.
+     * Removes obstacles that move off-screen to the left.
+     */
     private void updateGroundObstacles() {
         Iterator<Rectangle> iter = groundObstacles.iterator();
         while (iter.hasNext()) {
@@ -240,6 +292,13 @@ public class Boss {
 
     private long lastSideShotTime = 0;
     private long sideShotCooldown = 2500;
+    /**
+     * The boss shoots large balls from the top and spread projectiles from the right side.
+     *
+     * @param player The Player object.
+     * @param bullets The ArrayList of bullets to add new boss projectiles to.
+     * @param screenWidth The width of the game screen.
+     */
 
     private void stage3Attack(Player player, ArrayList<Bullet> bullets, int screenWidth) {
         long now = System.currentTimeMillis();
@@ -277,7 +336,14 @@ public class Boss {
             lastSideShotTime = now;
         }
     }
-
+    /**
+     * Updates the boss's state, including its position and initiating attacksbased on its current stage
+     *
+     * @param bullets The ArrayList of bullets in the game.
+     * @param player The Player object.
+     * @param screenWidth The width of the game screen.
+     * @param screenHeight The height of the game screen.
+     */
     public void update(ArrayList<Bullet> bullets, Player player, int screenWidth, int screenHeight) {
         switch (stage) {
             case STAGE_1:
@@ -305,7 +371,11 @@ public class Boss {
                 break;
         }
     }
-
+    /**
+     * Moves the boss to the top-right corner of the screen.
+     *
+     * @param screenWidth The width of the game screen.
+     */
     private void moveToTopRight(int screenWidth) {
         this.x = screenWidth - this.width;
         this.y = 0;
@@ -314,7 +384,11 @@ public class Boss {
     public ArrayList<Rectangle> getGroundObstacles() {
         return groundObstacles;
     }
-
+    /**
+     * Draws the boss, its platforms, and ground obstacles on the screen.
+     *
+     * @param g2 The Graphics2D object used for drawing.
+     */
     public void draw(Graphics2D g2) {
         g2.setColor(Color.MAGENTA);
         g2.fillRect((int) x, (int) y, width, height);

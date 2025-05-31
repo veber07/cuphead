@@ -3,7 +3,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-
+/**
+ * The GamePanel class represents the main game panel where all game elements are rendered and updated
+ * It extends JPanel and implements Runnable to manage the game loop.
+ */
 public class GamePanel extends JPanel implements Runnable {
     final int originalTitleSize = 16;
     final int scale = 3;
@@ -35,7 +38,13 @@ public class GamePanel extends JPanel implements Runnable {
     Thread gameThread;
     Key keyHandler;
 
-
+    /**
+     * Constructs a new GamePanel.
+     *
+     * @param launcher The GameLauncher instance that created this panel.
+     * @param screenWidth The width of the game screen.
+     * @param screenHeight The height of the game screen.
+     */
     public GamePanel(GameLauncher launcher, int screenWidth, int screenHeight) {
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
@@ -86,11 +95,17 @@ public class GamePanel extends JPanel implements Runnable {
 
 
 
-
+    /**
+     * Starts the main game loop thread.
+     */
     public void startGameThread() {
         this.gameThread = new Thread(this);
         this.gameThread.start();
     }
+    /**
+     * The main game loop. This method is called when the gameThread starts.
+     * It handles game updates and rendering at a fixed FPS.
+     */
     public void run() {
         double drawInterval = 1000000000.0 / FPS;
         double delta = 0;
@@ -119,6 +134,10 @@ public class GamePanel extends JPanel implements Runnable {
         }
 
     }
+    /**
+     * Updates the game state, including player, boss, bullets, and collisions.
+     * This method is called repeatedly within the game loop.
+     */
     public void update() {
         if (paused) return;
         gameStateManager.update(player, boss);
@@ -394,6 +413,11 @@ public class GamePanel extends JPanel implements Runnable {
             }
         }*/
     }
+    /**
+     * Paints the game components on the panel.
+     *
+     * @param g The Graphics object to draw on.
+     */
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g.create();
@@ -432,7 +456,9 @@ public class GamePanel extends JPanel implements Runnable {
             g2.drawString(text, (screenWidth - textWidth) / 2, screenHeight / 2);
         }
         g2.dispose();
-    }
+    }  /**
+     * Resets the game to its initial stateand allowing the player to start a new game.
+     */
     private void resetGame() {
 
         this.addKeyListener(keyHandler);
@@ -455,6 +481,9 @@ public class GamePanel extends JPanel implements Runnable {
         removeGameOverButtons();
 
     }
+    /**
+     * Creates and displays the Play Againand Quit buttons when the game ends.
+     */
     private void createAndShowGameOverButtons() {
         int buttonWidth = 200;
         int buttonHeight = 60;
@@ -488,6 +517,9 @@ public class GamePanel extends JPanel implements Runnable {
         this.revalidate();
         this.repaint();
     }
+    /**
+     * Removes the Play Again and Quit buttons from the panel.
+     */
 
     private void removeGameOverButtons() {
         if (playAgainButton != null) {
