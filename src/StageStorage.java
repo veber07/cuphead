@@ -3,7 +3,7 @@ import java.io.*;
  * The StageStorage class handles the saving and loading of the boss's current stage
  */
 public class StageStorage {
-    private static final String FILE_NAME = "current_stage.dat";
+    private static final String FILE_NAME = "current_stage.dat3";
 
     /**
      * Deletes the saved stage file from the file system.
@@ -11,9 +11,19 @@ public class StageStorage {
      */
     public static void deleteStageFile() {
         File file = new File(FILE_NAME);
+
         if (file.exists()) {
-            file.delete();
+
+            boolean deleted = file.delete();
+            if (deleted) {
+
+            } else {
+
+            }
+        } else {
+
         }
+
     }
 
     /**

@@ -18,15 +18,8 @@ public class Platform {
         this.width = width;
         this.height = height;
     }
-    /**
-     * Draws the platform on the Graphics2D context.
-     *
-     * @param g2 The Graphics2D object to draw on.
-     */
-    public void draw(Graphics2D g2) {
-        g2.setColor(Color.GRAY);
-        g2.fillRect(x, y, width, height);
-    }
+
+
 
     public Rectangle getBounds() {
         return new Rectangle(x, y, width, height);

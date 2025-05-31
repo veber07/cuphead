@@ -8,7 +8,7 @@ import java.util.Iterator;
 public class Boss {
     private ArrayList<Platform> platforms = new ArrayList<>();
     private boolean platformsSpawnedForStage2 = false;
-
+    private BossGraphicsManager graphicsManager;
     private float x, y;
     private int width = 150;
     private int height = 450;
@@ -29,6 +29,8 @@ public class Boss {
     private int screenHeight;
 
     private long shootInterval = 1500;
+    private long lastStage2ShotTime = 0;
+    private  final long stage_2coldown = 1000;
 
 
     private long lastObstacleSpawnTime = 0;
@@ -50,6 +52,7 @@ public class Boss {
         this.screenHeight = screenHeight;
         this.player = player;
         initializeStage(this.stage);
+        this.graphicsManager = new BossGraphicsManager();
     }
     /**
      * Initializes the boss to a new stage, resetting health, platforms, and obstacles.
@@ -171,6 +174,31 @@ public class Boss {
             groundObstacles.add(new GroundObstacle(screenWidth, screenHeight - GROUND_HEIGHT - obstacleHeight,
                     obstacleWidth, obstacleHeight, screenHeight,stage2PlatformY));
             lastObstacleSpawnTime = now;
+        }
+
+        if (now - lastStage2ShotTime >= stage_2coldown) {
+
+            float targetBulletY = stage2PlatformY - (player.getBaseHeight() / 2f);
+
+
+            float startX = this.x;
+            float startY = this.y + (this.height / 2f);
+
+
+            int bulletDx = -10;
+            int bulletDy = 0;
+
+            bullets.add(new Bullet(
+                    startX,
+                    targetBulletY,
+                    bulletDx,
+                    bulletDy,
+                    ProjectileType.BOSS_BALL,
+                    ProjectileTypeMain.BOSS_BULLET,
+                    25, // Šířka kulky
+                    25  // Výška kulky
+            ));
+            lastStage2ShotTime = now;
         }
         updateGroundObstacles();
     }
@@ -363,6 +391,7 @@ public class Boss {
             case STAGE_3:
                 moveToTopRight(screenWidth);
                 stage3Attack(player, bullets, screenWidth);
+                this.width = 300;
                 if (!platforms.isEmpty()) {
                     platforms.clear();
                     platformsSpawnedForStage2 = false;
@@ -390,16 +419,22 @@ public class Boss {
      * @param g2 The Graphics2D object used for drawing.
      */
     public void draw(Graphics2D g2) {
-        g2.setColor(Color.MAGENTA);
-        g2.fillRect((int) x, (int) y, width, height);
+        graphicsManager.drawBoss(g2, this.stage, this.x, this.y, this.width, this.height);
 
-        for (Platform p : platforms) {
-            p.draw(g2);
-        }
+        // Vykreslování platforem a pozemních překážek zůstává zde,
+        // protože to jsou komponenty, které patří k logice bosse
+
+
 
         g2.setColor(Color.ORANGE);
         for (Rectangle r : groundObstacles) {
             g2.fillRect(r.x, r.y, r.width, r.height);
+        }
+
+        g2.setColor(Color.GRAY);
+        for (Platform p : platforms) {
+            Rectangle bounds = p.getBounds();
+            g2.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
         }
     }
 

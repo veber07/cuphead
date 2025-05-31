@@ -49,5 +49,15 @@ public class Key implements KeyListener {
         if(code == KeyEvent.VK_W) upViewPressed = false;
         if (code == KeyEvent.VK_ESCAPE) escape = false;
     }
+    public void resetKeys() {
+        upPressed = false;
+        downPressed = false;
+        leftPressed = false;
+        rightPressed = false;
+        shootPressed = false;
+        upViewPressed = false;
+        escape = false;
+        System.out.println("Key states reset.");
+    }
 
 }

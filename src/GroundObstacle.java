@@ -1,5 +1,7 @@
 import java.awt.Rectangle;
 import java.util.Random;
+import java.awt.Graphics2D; // Import pro Graphics2D
+import java.awt.image.BufferedImage;
 /**
  * The GroundObstacle class represents an obstacle that moves along the ground and can optionally jump
  *
@@ -17,6 +19,8 @@ public class GroundObstacle extends Rectangle {
     private int playerHeight;
     private int screenHeight;
     private static final int GROUND_HEIGHT = 50;
+
+
     /**
      * Construction
      *

@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 /**
  * The Bullet class represents a projectile fired in the game.
@@ -14,6 +15,7 @@ public class Bullet {
     private int directionY = 0;
     private ProjectileType type;
     private ProjectileTypeMain typeMain;
+    private BufferedImage bulletImage;
 
 
     /**
@@ -38,6 +40,37 @@ public class Bullet {
         this.bulletWidht = width;
         this.bulletHeight = height;
         System.out.println("    BULELTRD" + x + ", y=" + y + ", dx=" + dx + ", dy=" + dy + ", width=" + width + ", height=" + height);
+        loadBulletImage();
+    }
+    private void loadBulletImage() {
+        try {
+            switch (type) {
+                case LASER_SHORT:
+                    bulletImage = ImageLoader.loadImage("/res/tungbullet.png");
+                    break;
+                case LASER_LONG:
+                    bulletImage = ImageLoader.loadImage("/res/tungbullet.png");
+                    break;
+                case BOSS_BALL:
+                    bulletImage = ImageLoader.loadImage("/res/tralalabullet.png");
+                    break;
+                case BOSS_BIG_BALL:
+                    bulletImage = ImageLoader.loadImage("/res/bombaaCrocodilo.png");
+                    break;
+                case BOSS_SPREAD:
+                    bulletImage = ImageLoader.loadImage("/res/bulletCrocodilooo.png");
+                case PLAYER_BULLET:
+                    bulletImage = ImageLoader.loadImage("/res/list.png");
+                    break;
+                default:
+                    System.out.println("No specific image for bullet type: " + type + ", using default color.");
+
+                    break;
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to load image for bullet type " + type + ": " + e.getMessage());
+            bulletImage = null;
+        }
     }
     /**
      * Updates the bullet's position based on its velocity.
@@ -46,9 +79,7 @@ public class Bullet {
         x += dx;
         y += dy;
     }
-    public boolean isOutOfScreen(int screenWidth, int screenHeight) {
-        return x < 0 || x > screenWidth || y < 0 || y > screenHeight;
-    }
+
     /**
      * Checks if this bullet has collided with a target.
      *
@@ -70,15 +101,20 @@ public class Bullet {
      * @param g2 The Graphics2D object to draw on.
      */
     public void draw(Graphics2D g2) {
-        if (type == ProjectileType.LASER_SHORT) {
-            g2.setColor(Color.CYAN);
-        } else if (type == ProjectileType.LASER_LONG) {
-            g2.setColor(Color.BLUE);
+        if (bulletImage != null) {
+            g2.drawImage(bulletImage, (int) x, (int) y, bulletWidht, bulletHeight, null); // Vykreslení obrázku
         } else {
-            g2.setColor(Color.ORANGE);
+            // Původní kód pro vykreslení barevného obdélníku, pokud se obrázek nenačte
+            if (type == ProjectileType.LASER_SHORT) {
+                g2.setColor(Color.CYAN);
+            } else if (type == ProjectileType.LASER_LONG) {
+                g2.setColor(Color.BLUE);
+            } else {
+                g2.setColor(Color.ORANGE);
+            }
+            g2.fillRect((int) x, (int) y,bulletHeight, bulletHeight); // Opravený název proměnné
+            System.out.println("Kulka vykreslena na pozici x=" + x + ", y=" + y + " (bez obrázku)");
         }
-        g2.fillRect((int) x, (int) y, bulletWidht, bulletHeight);
-        System.out.println("Kulka vykreslena na pozici  x=" + x + ", y=" + y);
 
     }
 

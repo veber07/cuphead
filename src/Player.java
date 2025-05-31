@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.awt.image.BufferedImage;
 /**
  * The Player class represents the playable character in the game.
 
@@ -18,6 +19,11 @@ public class Player {
     private final float GRAVITY = 0.5f;
     private final float JUMP_FORCE = -10f;
     private final float MOVE_SPEED = 5f;
+    private BufferedImage playerIdle;
+    private BufferedImage playerWalk1;
+    private BufferedImage playerWalk2;
+    private BufferedImage playerJump;
+    private BufferedImage playerCrouch;
 
 
     public int facingY = 0;
@@ -25,7 +31,10 @@ public class Player {
 
     public int width;
     private  int height;
-    private int health = 100;
+    private int health = 3;
+    private long animationTimer = 0;
+    private int animationFrame = 0;
+    private final long ANIMATION_SPEED = 150;
     /**
      * Construction
      *
@@ -35,17 +44,39 @@ public class Player {
     public Player(int screenWidth, int screenHeight) {
 
         this.width = screenWidth / 20;
-        this.height = screenHeight / 8;
+        this.height = screenHeight / 10;
+
+
+
 
 
         this.x = Math.max(screenWidth / 10, 0);
         this.y = Math.max(screenHeight - (screenHeight / 18) - this.height, 0);
-        this.baseHeight = screenHeight / 10;
-        this.height = baseHeight;
+        this.baseHeight = this.height;
+
+        System.out.println("DEBUG: Player width: " + this.width + ", height: " + this.height);
+        loadPlayerImages();
     }
     /**
-     * Updates the player's state, including movement, aiming, crouching,jumping, and gravity application.
-     *
+     * Loads the image assets for the player's various animations.
+     */
+    private void loadPlayerImages() {
+try {
+
+
+    playerIdle = ImageLoader.loadImage("/res/brr.png");
+    playerWalk1 = ImageLoader.loadImage("/res/brrgo.png");
+    playerWalk2 = ImageLoader.loadImage("/res/brrgo2.png");
+    playerJump = ImageLoader.loadImage("/res/brrjump.png");
+    playerCrouch = ImageLoader.loadImage("/res/brrcrouch.png");
+}catch (Exception e) {
+    System.out.println("nenacetli se obrazky");
+}
+
+    }
+    /**
+     * Updates the player's state, including movement, aiming, crouching,jumping, and gravity applicationand loading its animation images.
+     * @Auhor ChatGPT
      * @param left True if the left movement key is pressed.
      * @param right True if the right movement key is pressed.
      * @param jump True if the jump key is pressed.
@@ -84,9 +115,10 @@ public class Player {
         if (crouching) {
             height = baseHeight / 2;
         } else {
-          height = baseHeight;
-
+            height = baseHeight;
         }
+
+
        // if (!left && !right) {
        //     facingX = 0;
      //   }
@@ -108,6 +140,15 @@ public class Player {
         if (invincible && System.currentTimeMillis() - lastHitTime >= 3000) {
             invincible = false;
         }
+        animationTimer += 1000 / 60;
+        if (animationTimer >= ANIMATION_SPEED) {
+            animationFrame = (animationFrame + 1) % 2;
+            animationTimer = 0;
+        }
+
+        if (invincible && System.currentTimeMillis() - lastHitTime >= 3000) {
+            invincible = false;
+        }
 
     }
     /**
@@ -125,14 +166,54 @@ public class Player {
         }
     }
     /**
-     * Draws the player character on the Graphics2D context.
+     * * Draws the player character on the provided Graphics2D context
      *
      * @param g2 The Graphics2D object to draw on.
      */
     public void draw(Graphics2D g2) {
-        g2.setColor(Color.BLUE);
-        g2.fillRect((int)x, (int)y, width, height);
-        //System.out.println("Player: x=" + x + ", y=" + y + ", width=" + width + ", height=" + height);
+        BufferedImage currentImage = playerIdle;
+
+        if (isCrouching()) {
+            currentImage = playerCrouch;
+        } else if (!isOnGround()) {
+            currentImage = playerJump;
+        } else if (velocityX != 0) {
+            if (animationFrame == 0) {
+                currentImage = playerWalk1;
+            } else {
+                currentImage = playerWalk2;
+            }
+        }
+
+        RenderingHints originalHints = g2.getRenderingHints();
+
+
+        g2.setRenderingHints(new RenderingHints(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR));
+        g2.setRenderingHints(new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY));
+        g2.setRenderingHints(new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON));
+
+        if (invincible) {
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f));
+        }
+
+        if (currentImage != null) {
+            if (facingX == -1) {
+                g2.drawImage(currentImage, (int) x + width, (int) y, -width, height, null);
+            } else {
+                g2.drawImage(currentImage, (int) x, (int) y, width, height, null);
+            }
+        } else {
+            g2.setColor(Color.BLUE);
+            g2.fillRect((int)x, (int)y, width, height);
+        }
+
+        if (invincible) {
+            g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+        }
+
+
+        g2.setRenderingHints(originalHints);
+
 
     }
 

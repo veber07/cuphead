@@ -8,20 +8,14 @@ import java.util.ArrayList;
  * It extends JPanel and implements Runnable to manage the game loop.
  */
 public class GamePanel extends JPanel implements Runnable {
-    final int originalTitleSize = 16;
-    final int scale = 3;
-    public int finaTitlesize = 48;
-    final int maxScreenUp = 16;
-    final int maxScreenLeft = 12;
+
     final int screenWidth;
     final int screenHeight;
     final int FPS;
     private GameLauncher launcher;
 
     Player player;
-    boolean leftPressed = false;
-    boolean rightPressed = false;
-    boolean jumpPressed = false;
+
     private boolean paused = false;
     private ArrayList<Bullet> bullets = new ArrayList<>();
     boolean shootPressed = false;
@@ -59,16 +53,6 @@ public class GamePanel extends JPanel implements Runnable {
         this.player.y = 100;
         this.boss = new Boss(0, 0, screenWidth, screenHeight,player);
 
-        InputMap im = this.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-        ActionMap am = this.getActionMap();
-        im.put(KeyStroke.getKeyStroke("ESCAPE"), "none");
-        am.put("none", new AbstractAction() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-
-                    }
-                }
-        );
 
 
 
@@ -105,6 +89,7 @@ public class GamePanel extends JPanel implements Runnable {
     /**
      * The main game loop. This method is called when the gameThread starts.
      * It handles game updates and rendering at a fixed FPS.
+     * @Author ME - from difrent project
      */
     public void run() {
         double drawInterval = 1000000000.0 / FPS;
@@ -143,43 +128,54 @@ public class GamePanel extends JPanel implements Runnable {
         gameStateManager.update(player, boss);
 
         if (keyHandler.escape) {
-            keyHandler.escape = false;
-            if (!gameStateManager.isRunning()) return;
 
-            paused = true;
+            if (!escapeHandledOnce) {
+                escapeHandledOnce = true;
 
-            JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
-            int result = JOptionPane.showOptionDialog(
-                    topFrame,
-                    "Co chceš udělat?",
-                    "Pauza",
-                    JOptionPane.DEFAULT_OPTION,
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    new String[]{"Pokračovat", "Menu", "Odejít"},
-                    "Pokračovat"
-            );
+                if (!gameStateManager.isRunning()) {
+                    keyHandler.escape = false;
+                    return;
+                }
 
-            switch (result) {
-                case 0:
-                    paused = false;
-                    break;
-                case JOptionPane.CLOSED_OPTION:
-                    paused = false;
-                    break;
-                case 1: // Menu
-                    StageStorage.saveStage(boss.getStage());
-                    MenuPanel menuPanel = new MenuPanel(this.screenWidth, this.screenHeight,launcher);
-                    topFrame.setContentPane(menuPanel);
-                    topFrame.revalidate();
-                    topFrame.repaint();
-                    menuPanel.requestFocusInWindow();
-                    break;
-                case 2: //
-                    System.exit(0);
-                    break;
+                paused = true;
+
+                JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+                int result = JOptionPane.showOptionDialog(
+                        topFrame,
+                        "Co chceš udělat?",
+                        "Pauza",
+                        JOptionPane.DEFAULT_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        new String[]{"Pokračovat", "Menu", "Odejít"},
+                        "Pokračovat"
+                );
+
+                switch (result) {
+                    case 0:
+                        paused = false;
+                        break;
+                    case JOptionPane.CLOSED_OPTION:
+                        paused = false;
+                        break;
+                    case 1: // Menu
+                        StageStorage.saveStage(boss.getStage());
+                        MenuPanel menuPanel = new MenuPanel(this.screenWidth, this.screenHeight, launcher);
+                        topFrame.setContentPane(menuPanel);
+                        topFrame.revalidate();
+                        topFrame.repaint();
+                        menuPanel.requestFocusInWindow();
+                        break;
+                    case 2: //
+                        System.exit(0);
+                        break;
+                }
+                keyHandler.escape = false;
             }
-        }
+        }else {
+
+                escapeHandledOnce = false;
+            }
         if (!gameStateManager.isRunning()) {
             if (!gameStateManager.isGameOverHandled()) {
                 gameStateManager.setGameOverHandled(true);
@@ -196,7 +192,7 @@ public class GamePanel extends JPanel implements Runnable {
 
         if (!gameStateManager.isRunning()) return;
 
-       // boss.setY(getScreenHeight() - 50 - boss.getHeight());
+
         boss.update(bullets, player, getScreenWidth(), getScreenHeight());
 
 
@@ -260,7 +256,7 @@ public class GamePanel extends JPanel implements Runnable {
 
 
                 if (shootDirX == 0 && shootDirY == 0) {
-                    shootDirX = player.getFacingX() != 0 ? player.getFacingX() : 1; // Střílejte ve směru, kam je hráč otočen, nebo doprava jako default
+                    shootDirX = player.getFacingX() != 0 ? player.getFacingX() : 1;
                 }
 
 
@@ -294,9 +290,9 @@ public class GamePanel extends JPanel implements Runnable {
             if (bullet.getTypeMain() == ProjectileTypeMain.PLAYER_BULLET &&
                     bullet.bulletHit(boss.getX(), boss.getY(), boss.getWidth(), boss.getHeight())) {
 
-                System.out.println("COLISION DEBUG: Kulka HRÁČE zasáhla BOSSE! Boss HP před: " + boss.getHealth());
+
                 boss.takeDamage(bullet.getType().getDamage());
-                System.out.println("COLISION DEBUG: Boss HP po: " + boss.getHealth() + ". Kulka odstraněna.");
+
                 bulletsToRemove.add(bullet);
             }
         }
@@ -313,9 +309,9 @@ public class GamePanel extends JPanel implements Runnable {
             if (bullet.getTypeMain() == ProjectileTypeMain.BOSS_BULLET &&
                     bullet.bulletHit(player.getX(), player.getY(), player.getWidth(), player.getHeight())) {
 
-                System.out.println("COLISION DEBUG: Kulka BOSSE zasáhla HRÁČE! Player HP před: " + player.getHealth());
+
                 player.takeDamage(bullet.getType().getDamage());
-                System.out.println("COLISION DEBUG: Player HP po: " + player.getHealth() + ". Kulka odstraněna.");
+
                 bulletsToRemove.add(bullet);
             }
         }
@@ -327,9 +323,9 @@ public class GamePanel extends JPanel implements Runnable {
         Rectangle bossBounds = new Rectangle((int)boss.getX(), (int)boss.getY(), boss.getWidth(), boss.getHeight());
 
         if (playerBounds.intersects(bossBounds)) {
-            System.out.println("COLISION DEBUG: HRÁČ narazil do těla BOSSE! Player HP před: " + player.getHealth());
+
             player.takeDamage(5);
-            System.out.println("COLISION DEBUG: Player HP po: " + player.getHealth());
+
 
 
             if (player.getX() < boss.getX()) {
@@ -342,7 +338,7 @@ public class GamePanel extends JPanel implements Runnable {
 
         for (Rectangle r : boss.getGroundObstacles()) {
             if (playerBounds.intersects(r)) {
-                System.out.println("COLISION DEBUG: HRÁČ zasáhl pozemní překážku!");
+
                 player.takeDamage(15);
 
             }
